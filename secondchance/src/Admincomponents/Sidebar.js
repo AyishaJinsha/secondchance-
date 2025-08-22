@@ -25,16 +25,16 @@ const Sidebar = ({ sidevisible }) => {
                         </div>
                     </div>
                     <Nav.Link className='main-menu-items'><Link to='/admin-user-manage' style={{ textDecoration: "none", color: "white" }}>User Management</Link></Nav.Link>
-                    <Nav.Link className='main-menu-items' > <Link to='/sales-analysis' style={{ textDecoration: "none", color: "white" }}>Sales Analysis</Link> </Nav.Link>
-                    <div className='dropdown'>
+                    {/* <Nav.Link className='main-menu-items' > <Link to='/sales-analysis' style={{ textDecoration: "none", color: "white" }}>Sales Analysis</Link> </Nav.Link> */}
+                    {/* <div className='dropdown'>
                         <Nav.Link className='main-menu-items' > <Link to='/marketing-manage' style={{ textDecoration: "none", color: "white" }}>Staff Management </Link></Nav.Link>
                         <div class="dropdown-content mb-5">
                         <Link to='/view-staff' style={{ textDecoration: "none" }}><a className='nav-items-links'>view Staffs</a></Link>
                             <Link to='/marketing-manage' style={{ textDecoration: "none" }}><a className='nav-items-links'>Create Store Admin</a></Link>
                             <Link to='/create-del-staff' style={{ textDecoration: "none" }}><a className='nav-items-links'>Create delivery staff</a></Link>
                         </div>
-                    </div>
-                    <Nav.Link className='main-menu-items' ><Link to='/revenue-tracking' style={{ textDecoration: "none", color: "white" }}> Revenue tracking </Link></Nav.Link>
+                    </div> */}
+                    {/* <Nav.Link className='main-menu-items' ><Link to='/revenue-tracking' style={{ textDecoration: "none", color: "white" }}> Revenue tracking </Link></Nav.Link> */}
                 </Nav>
             </Col>
         </>

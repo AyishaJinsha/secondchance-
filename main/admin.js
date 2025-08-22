@@ -170,6 +170,28 @@ router.post('/createdelivery', async (req, res) => {
     }
 })
 
+router.post('/createadmin', async (req, res) => {
+    const username = req.body.uname
+    const password = req.body.pass
+    const oldlog = await Adminlog.findOne({ username: username })
+
+    if (oldlog) {
+        res.json({ "data": "exist" })
+    }
+    else {
+        var items = {
+            username: username,
+            password: password,
+            type: "admin"
+        }
+
+        const newlogin = new Adminlog(items)
+        await newlogin.save()
+
+        res.json({ "data": "ok" })
+    }
+})
+
 router.post('/adminlogin', async (req, res) => {
     console.log(req.body);
     const username = req.body.uname

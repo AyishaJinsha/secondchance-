@@ -15,7 +15,7 @@ const InventoryArea = () => {
             prores(response.data.data)
         })
     }, [])
-    const img = 'http://localhost:8080/'
+    const img = 'http://localhost:8080/uploads/'
 
     const [show, setShow] = useState(false);
 

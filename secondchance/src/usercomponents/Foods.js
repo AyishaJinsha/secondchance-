@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Col, Card, Button, Modal, Container, Row } from 'react-bootstrap'
+import { Col, Card, Button, Modal, Container, Row, Badge } from 'react-bootstrap'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import AddCartModal from './AddCartModal'
@@ -60,28 +60,46 @@ const Foods = () => {
 
   const addcart = async (id) => {
     if (qty == "" || qty<=0) {
-      alert("enter a valid number")
+      alert("Please enter a valid quantity")
     }
     else {
       if (uid) {
-        const response = await axios.post('http://localhost:8080/user/addcart', { id, uid, qty })
-        console.log(response.data.data);
-        if (response.data.data == "no stock") {
-          alert(" sorry item out of stock")
-        }
-        else if (response.data.data == "ok") {
-          nav('/cart')
+        try {
+          const response = await axios.post('http://localhost:8080/user/addcart', { id, uid, qty })
+          console.log(response.data);
+          if (response.data.data == "no stock") {
+            alert(response.data.message || "Sorry, this item is out of stock or insufficient stock available")
+          }
+          else if (response.data.data == "ok") {
+            alert(response.data.message || "Item added to cart successfully!")
+            nav('/cart')
+          }
+          else if (response.data.data == "Product not found") {
+            alert("Product not found. Please try again.")
+          }
+          else if (response.data.data == "error") {
+            alert("Server error occurred. Please try again.")
+          }
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+          alert("Error adding item to cart. Please try again.")
         }
       }
       else {
-        alert("please login to add item to cart")
+        alert("Please login to add item to cart")
       }
-
-
     }
-
   }
 
+  const getStockBadge = (stock) => {
+    if (stock <= 0) {
+      return <Badge bg="danger">Out of Stock</Badge>
+    } else if (stock <= 5) {
+      return <Badge bg="warning" text="dark">Low Stock ({stock})</Badge>
+    } else {
+      return <Badge bg="success">In Stock ({stock})</Badge>
+    }
+  }
 
   return (
     <>{pro.map((i) => (
@@ -91,8 +109,23 @@ const Foods = () => {
           <Card.Body>
             <Card.Title className='text-center'>{i.name}</Card.Title>
             <hr></hr>
-            <button className='top-coll-btn ms-3' onClick={() => prospec(i._id)}>Order</button>
-            <div className='price-style text-end' style={{ marginTop: "-35px" }}>₹{i.price}</div>
+            <div className='d-flex justify-content-between align-items-center'>
+              <button 
+                className='top-coll-btn ms-3' 
+                onClick={() => prospec(i._id)}
+                disabled={i.stock <= 0}
+                style={{ 
+                  opacity: i.stock <= 0 ? 0.6 : 1,
+                  cursor: i.stock <= 0 ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {i.stock <= 0 ? 'Out of Stock' : 'Order'}
+              </button>
+              <div className='price-style text-end'>₹{i.price}</div>
+            </div>
+            <div className='mt-2 text-center'>
+              {getStockBadge(i.stock)}
+            </div>
           </Card.Body>
         </Card>
       </Col>

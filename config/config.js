@@ -1,0 +1,17 @@
+// Database configuration
+// Choose one of the following options:
+
+// Option 1: MongoDB Atlas (Cloud)
+// Replace these values with your actual MongoDB Atlas credentials
+// const mongodb_url = 'mongodb+srv://your_username:your_password@your_cluster.mongodb.net/your_database_name?retryWrites=true&w=majority'
+
+// Option 2: Local MongoDB (Recommended for development)
+const mongodb_url = 'mongodb+srv://ayishajinshava:Gy2AWjgIzZOrLWG7@cluster0.xalmxc2.mongodb.net/scfoods?retryWrites=true&w=majority&appName=Cluster0'
+
+const config = {
+    mongodb: {
+        url: process.env.MONGODB_URL || mongodb_url
+    }
+};
+
+module.exports = config;

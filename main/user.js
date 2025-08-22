@@ -14,7 +14,7 @@ const Ordersub = require('../models/ordersub')
 
 
 router.get('/getproduct', async (req, res) => {
-    const cat=req.params.cat
+    const cat = req.params.cat
     const pro = await Pro.find()
     res.json({ data: pro })
 })
@@ -27,34 +27,41 @@ router.post('/signup', async (req, res) => {
     const password = req.body.pass
     const mobile = req.body.mobile
 
-    var items = {
-        mail: email,
-        password: password,
-        username: uname,
-        mobile: mobile
+    const exist = await Sign.findOne({ mail: email })
+    if (exist) {
+        res.json({ "data": "exist" })
+    }
+    else {
+        var items = {
+            mail: email,
+            password: password,
+            username: uname,
+            mobile: mobile
+        }
+
+        const newsign = new Sign(items)
+        await newsign.save()
+
+        const signs = await Sign.findOne({ mail: email })
+
+        console.log(signs._id);
+
+
+        var items2 = {
+            mail: email,
+            user: signs._id,
+            password: password,
+            type: "user"
+        }
+
+        console.log(signs);
+
+
+        const newlogin = new Log(items2)
+        await newlogin.save()
+        res.json({ "data": "ok", uid: signs._id })
     }
 
-    const newsign = new Sign(items)
-    await newsign.save()
-
-    const signs=await Sign.findOne({mail:email})
-
-    console.log(signs._id);
-    
-
-    var items2 = {
-        mail: email,
-        user:signs._id,
-        password: password,
-        type: "user"
-    }
-
-    console.log(signs);
-    
-    
-    const newlogin = new Log(items2)
-    await newlogin.save()
-    res.json({ "data": "ok",uid:signs._id })
 })
 
 
@@ -62,13 +69,16 @@ router.post('/login', async (req, res) => {
     const mail = req.body.mail
     const pass = req.body.pass
 
+    console.log(req.body);
+
+
     const logdata = await Log.findOne({ mail: mail, password: pass })
     // console.log(logdata);
-    
+
 
     if (logdata) {
         console.log(logdata.user);
-        
+
         res.json({ "data": "ok", uid: logdata.user })
     }
     else {
@@ -83,49 +93,74 @@ router.get('/prospec/:id', async (req, res) => {
 })
 
 router.post('/addcart', async (req, res) => {
-    const id = req.body.id
-    const uid = req.body.uid
-    console.log(req.body);
-    let quantity = req.body.qty
+    try {
+        const id = req.body.id
+        const uid = req.body.uid
+        console.log(req.body);
+        let quantity = req.body.qty
 
-    const product = await Pro.findOne({ _id: id })
-    let total = product.price * quantity
-
-    if(product.stock >= quantity){
-        const cart = await Cart.findOne({ product: id })
-    if (cart) {
-        quantity = cart.quantity + quantity
-        total = quantity * product.price
-        var items = {
-            quantity: quantity,
-            total: total
+        const product = await Pro.findOne({ _id: id })
+        
+        if (!product) {
+            return res.json({ "data": "Product not found" })
         }
 
-        await Cart.findOneAndUpdate(
-            { product: id },
-            { $set: items },
-            { new: true }
-        )
-        res.json({ "data": "ok" })
-    }
-    else {
-        var items = {
-            product: id,
-            user: uid,
-            quantity: quantity,
-            total: total
+        let total = product.price * quantity
+
+        // Check if product is out of stock
+        if (product.stock <= 0) {
+            return res.json({ "data": "no stock", message: "Product is out of stock" })
         }
 
-        const newcart = new Cart(items)
-        await newcart.save()
-        res.json({ "data": "ok" })
-    }
-    }
-    else{
-        res.json({"data":"no stock"})
-    }
-    
+        // Check if requested quantity is available
+        if (product.stock < quantity) {
+            return res.json({ 
+                "data": "no stock", 
+                message: `Only ${product.stock} items available in stock` 
+            })
+        }
 
+        const cart = await Cart.findOne({ product: id, user: uid })
+        if (cart) {
+            // Check if adding more would exceed stock
+            const newTotalQuantity = cart.quantity + quantity
+            if (newTotalQuantity > product.stock) {
+                return res.json({ 
+                    "data": "no stock", 
+                    message: `Cannot add more items. Only ${product.stock} items available in stock` 
+                })
+            }
+            
+            quantity = newTotalQuantity
+            total = quantity * product.price
+            var items = {
+                quantity: quantity,
+                total: total
+            }
+
+            await Cart.findOneAndUpdate(
+                { product: id, user: uid },
+                { $set: items },
+                { new: true }
+            )
+            res.json({ "data": "ok", message: "Cart updated successfully" })
+        }
+        else {
+            var items = {
+                product: id,
+                user: uid,
+                quantity: quantity,
+                total: total
+            }
+
+            const newcart = new Cart(items)
+            await newcart.save()
+            res.json({ "data": "ok", message: "Item added to cart successfully" })
+        }
+    } catch (error) {
+        console.error('Error in addcart:', error);
+        res.json({ "data": "error", message: "Server error occurred" })
+    }
 })
 router.get('/getcart/:uid', async (req, res) => {
     const uid = req.params.uid
@@ -158,10 +193,10 @@ router.post('/postorder', async (req, res) => {
     const amount = req.body.subtotal
 
     const sampledate = new Date(date);
-  
+
     const formattedDate = sampledate.toLocaleString();
     console.log(formattedDate);
-    
+
 
 
     var items = {
@@ -182,15 +217,15 @@ router.post('/postorder', async (req, res) => {
         }
         const newsuborder = new Ordersub(items2)
         await newsuborder.save()
-        const pro=await Pro.findOne({_id:i.product._id})
-        const newstock=pro.stock-i.quantity     
-        var items={
-            stock:newstock
+        const pro = await Pro.findOne({ _id: i.product._id })
+        const newstock = pro.stock - i.quantity
+        var items = {
+            stock: newstock
         }
         await Pro.findOneAndUpdate(
-            {_id:i.product._id},
-            {$set:items},
-            {new:true}
+            { _id: i.product._id },
+            { $set: items },
+            { new: true }
         )
         await Cart.findOneAndDelete({ user: uid })
     }
@@ -200,22 +235,22 @@ router.post('/postorder', async (req, res) => {
 })
 router.get('/getorder/:uid/:index', async (req, res) => {
     const uid = req.params.uid
-    const index=req.params.index
-    let order=[]
-    if(index==0){
+    const index = req.params.index
+    let order = []
+    if (index == 0) {
         order = await Ordermain.find({ user: uid })
     }
-    else if(index==1){
-        order = await Ordermain.find({ user: uid,deliverystatus:"pending" })
+    else if (index == 1) {
+        order = await Ordermain.find({ user: uid, deliverystatus: "pending" })
     }
-    else if(index==2){
-        order = await Ordermain.find({ user: uid,deliverystatus:"confirmed" })
+    else if (index == 2) {
+        order = await Ordermain.find({ user: uid, deliverystatus: "confirmed" })
     }
-    else if(index==3){
-        order = await Ordermain.find({ user: uid,deliverystatus:"Delivered" })
+    else if (index == 3) {
+        order = await Ordermain.find({ user: uid, deliverystatus: "Delivered" })
     }
-    else if(index==4){
-        order = await Ordermain.find({ user: uid,deliverystatus:"On it's way" })
+    else if (index == 4) {
+        order = await Ordermain.find({ user: uid, deliverystatus: "On it's way" })
     }
     const fullorder = []
     for (i of order) {
@@ -226,7 +261,7 @@ router.get('/getorder/:uid/:index', async (req, res) => {
             "status": i.deliverystatus,
             "date": i.date,
             "subtotal": i.amount,
-            "newsub": []  
+            "newsub": []
         };
 
         for (j of ordersub) {
@@ -241,13 +276,7 @@ router.get('/getorder/:uid/:index', async (req, res) => {
     }
     // console.log(fullorder); 
     console.log(order);
-    
     res.json({ data: fullorder })
-
 })
-
-
-
-
 
 module.exports = router

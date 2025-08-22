@@ -20,7 +20,7 @@ const ConfirmArea = () => {
             ordfunc(response.data.data.filter(item => item.status == "confirmed"))
         })
     }, [])
-    const img = 'http://localhost:8080/'
+    const img = 'http://localhost:8080/uploads/'
 
     const sortedOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date));
 

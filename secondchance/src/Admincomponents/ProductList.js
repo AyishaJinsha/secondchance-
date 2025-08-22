@@ -58,7 +58,7 @@ const ProductList = () => {
                                     {pro.map((i) => (
                                         <Col lg={sidevisible ? 4 : 3} style={{ marginTop: "80px", marginBottom: "80px" }}>
                                             <Card style={{ width: '18rem' }} className='food-card'>
-                                                <Card.Img variant="top" className='food-card-image' src={`${img}${i.image}`} height="230px" width="10px" />
+                                                <Card.Img variant="top" className='food-card-image' src={`${img}${i.image.replace(/\\/g, '/')}`} height="230px" width="10px" />
                                                 <Card.Body>
                                                     <Card.Title className='text-center'>{i.name}</Card.Title>
                                                     <hr></hr>

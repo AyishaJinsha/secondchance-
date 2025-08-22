@@ -17,7 +17,7 @@ const OrderArea = () => {
             ordfunc(response.data.data)
         })
     }, [])
-    const img = 'http://localhost:8080/'
+    const img = 'http://localhost:8080/uploads/'
 
     const changestatus = async (index, id) => {
         // console.log(index, id);

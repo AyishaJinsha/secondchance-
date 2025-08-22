@@ -146,3 +146,10 @@
     display:block;
    }
 }
+
+/* Remove border radius from food card images in admin interface */
+.food-card-image {
+    border-radius: 0 !important;
+    margin-top: 0;
+    mix-blend-mode: normal;
+}

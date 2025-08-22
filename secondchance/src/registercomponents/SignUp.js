@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 const SignUp = ({ showsign, CloseSign }) => {
-    const nav=useNavigate()
+    const nav = useNavigate()
     const [uname, nres] = useState("")
     const [email, mailres] = useState("")
     const [pass, pres] = useState("")
@@ -17,12 +17,17 @@ const SignUp = ({ showsign, CloseSign }) => {
     const sub = async (e) => {
         e.preventDefault()
         const response = await axios.post('http://localhost:8080/user/signup', { uname, email, pass, mobile })
-        console.log(response.data.data);
-        // CloseSign()
-        nav('/')
-        sessionStorage.setItem('uid',response.data.uid)
-    }
-    const gotologin=()=>{
+        if (response.data.data == "exist") {
+            alert("email already exist")
+        }
+        else {
+            console.log(response.data.data);
+            // CloseSign()
+            nav('/')
+            sessionStorage.setItem('uid', response.data.uid)
+        }
+  }
+    const gotologin = () => {
         nav('/login')
     }
 

@@ -24,7 +24,7 @@ const MyOrders = () => {
         }
 
     }, [])
-    const img = 'http://localhost:8080/'
+    const img = 'http://localhost:8080/uploads/'
 
     const [activeIndex, setActiveIndex] = useState(0);
 

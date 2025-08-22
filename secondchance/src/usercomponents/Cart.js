@@ -7,6 +7,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import ConfirmModal from './ConfirmModal'
+// import RazorPay from './RazorPay'
 
 const Cart = () => {
     const nav = useNavigate()

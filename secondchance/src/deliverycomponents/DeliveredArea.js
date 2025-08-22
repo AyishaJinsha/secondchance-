@@ -21,7 +21,7 @@ const DeliveredArea = () => {
             ordfunc(response.data.data.filter(item => item.status == "Delivered"))
         })
     }, [])
-    const img = 'http://localhost:8080/'
+    const img = 'http://localhost:8080/uploads/'
 
     const sortedOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date));
 

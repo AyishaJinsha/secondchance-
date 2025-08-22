@@ -19,7 +19,7 @@ const PaymentArea = () => {
             alltotres(response.data.subtotal)
         })
     }, [])
-    const img = 'http://localhost:8080/'
+    const img = 'http://localhost:8080/uploads/'
 
     const changestatus = async (index, id) => {
         // console.log(index, id);

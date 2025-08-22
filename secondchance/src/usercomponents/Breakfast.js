@@ -112,7 +112,8 @@ const Breakfast = () => {
                                     <Card.Body>
                                         <Card.Title className='text-center'>{i.name}</Card.Title>
                                         <hr></hr>
-                                        <button className='top-coll-btn ms-3' onClick={() => prospec(i._id)}>Order</button>
+                                        {/* <button className='top-coll-btn ms-3' onClick={() => prospec(i._id)}>Order</button> */}
+                                        <button className='top-coll-btn ms-3'>Order</button>
                                         <div className='price-style text-end' style={{ marginTop: "-35px" }}>₹{i.price}</div>
                                     </Card.Body>
                                 </Card>
