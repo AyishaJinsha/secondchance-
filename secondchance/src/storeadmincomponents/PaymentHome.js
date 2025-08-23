@@ -20,9 +20,9 @@ const PaymentHome = () => {
                     <Row>
                         <StoreSidebar sidevisible={sidevisible} />
                         <Col lg={sidevisible ? 9 : 12}>
-                            <Row style={{ backgroundColor: "white", height: "90px" }}>
+                            {/* <Row style={{ backgroundColor: "white", height: "90px" }}>
                                 <MainNavbar changevisibility={changevisibility} sidevisible={sidevisible} />
-                            </Row>
+                            </Row> */}
                             <PaymentArea />
                         </Col>
                     </Row>

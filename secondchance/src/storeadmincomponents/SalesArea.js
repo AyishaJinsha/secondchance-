@@ -7,9 +7,9 @@ const SalesArea = () => {
         <>
 
             <Row style={{ backgroundColor: "rgb(243, 243, 243)" }} className='mt-4'>
-                <Col lg={12}>
+                {/* <Col lg={12}>
                     <center><h1 className='prod-manage-head'>Payments</h1></center>
-                </Col>
+                </Col> */}
             </Row>
 
         </>
