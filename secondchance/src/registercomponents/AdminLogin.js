@@ -11,23 +11,33 @@ const AdminLogin = () => {
 
     const sub=async(e)=>{
         e.preventDefault()
-        const response=await axios.post('http://localhost:8080/admin/adminlogin',{uname,pass})
-        console.log(response.data.data);
-        if(response.data.data == "store admin"){
-            sessionStorage.setItem("said",response.data.aid)
-            nav('/store-admin-home')
+        try{
+            const payload={ uname: (uname||'').trim(), pass: (pass||'').trim() }
+            if(!payload.uname || !payload.pass){
+                alert('Please enter username and password')
+                return
+            }
+            const response=await axios.post('http://localhost:8080/admin/adminlogin',payload)
+            console.log(response.data.data);
+            if(response.data.data == "store admin"){
+                sessionStorage.setItem("said",response.data.aid)
+                nav('/store-admin-home')
+            }
+            else if(response.data.data == "delivery staff"){
+                sessionStorage.setItem("did",response.data.aid)
+                nav('/delivery-home')
+            }
+            else if(response.data.data == "admin"){
+                sessionStorage.setItem("aid",response.data.aid)
+                nav('/admin-product-manage')
+            }
+            else{
+                alert('Wrong username or password')
+            }
+        }catch(err){
+            console.error(err)
+            alert('Network error. Please ensure the server at http://localhost:8080 is running.')
         }
-        else if(response.data.data == "delivery staff"){
-            sessionStorage.setItem("did",response.data.aid)
-            nav('/delivery-home')
-        }
-        else if(response.data.data == "admin"){
-            sessionStorage.setItem("aid",response.data.aid)
-            nav('/admin-product-manage')
-        }
-        else{
-            alert('wrong username or password')
-        }  
     }
 
 
@@ -48,7 +58,7 @@ const AdminLogin = () => {
                             <form onSubmit={sub}>
                                 <input type='text' className='admin-fields ps-3' placeholder='username' onChange={(e)=>ures(e.target.value)}></input><br></br>
                                 <input type='password' className='admin-fields mt-2 ps-3' placeholder='password' onChange={(e)=>pres(e.target.value)}></input><br></br>
-                                <button className='admin-sign-btn mt-4 pt-2 pb-2 ps-4 pe-4'>SIGN IN</button>
+                                <button type='submit' className='admin-sign-btn mt-4 pt-2 pb-2 ps-4 pe-4'>SIGN IN</button>
                             </form>
                         </div>
                     </Col>

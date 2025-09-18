@@ -33,8 +33,8 @@ const MainNavbar = ({ changevisibility, sidevisible }) => {
                                     <center><Navbar.Brand className='lobster-regular ms-5' style={{ fontSize: "28px" }}>2ndchancefoods</Navbar.Brand></center>
                                 </Nav>
                                 <Nav>
-                                    <Nav.Link><FaRegBell style={{ fontSize: "25px" }} className='ms-5 mt-1 mb-2' />
-                                    </Nav.Link>
+                                    {/* <Nav.Link><FaRegBell style={{ fontSize: "25px" }} className='ms-5 mt-1 mb-2' /> */}
+                                    {/* </Nav.Link> */}
                                     <Nav.Link><MdLogout style={{ fontSize: "25px", cursor: "pointer" }} className='ms-5 mt-1 mb-2' onClick={logout} />
                                     </Nav.Link>
                                 </Nav>

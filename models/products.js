@@ -6,7 +6,7 @@ const proschema=new mongoose.Schema({
     description:String,
     category:String,
     image:String,
-    stock:Number,
+    stock:{type:Number,default:0},
 })
 const Pro=mongoose.model('products',proschema)
 module.exports=Pro

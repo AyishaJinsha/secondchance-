@@ -1,9 +1,9 @@
 const mongoose=require('mongoose')
 
 const ordersubschema=new mongoose.Schema({
-    ordermain:{type:mongoose.Schema.Types.ObjectId,ref:'order'},
+    ordermain:{type:mongoose.Schema.Types.ObjectId,ref:'ordermain'},
     product:{type:mongoose.Schema.Types.ObjectId,ref:'products'},
-    quantity:String
+    quantity:Number
 })
 const Ordersub=mongoose.model('ordersub',ordersubschema)
 module.exports=Ordersub

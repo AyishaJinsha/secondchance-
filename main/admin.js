@@ -192,6 +192,26 @@ router.post('/createadmin', async (req, res) => {
     }
 })
 
+// Admin password reset/upsert helper
+router.post('/resetadmin', async (req, res) => {
+    try {
+        const username = req.body.uname
+        const password = req.body.pass
+        if(!username || !password){
+            return res.status(400).json({ data: 'invalid' })
+        }
+        const result = await Adminlog.findOneAndUpdate(
+            { username: username },
+            { $set: { password: password, type: 'admin' } },
+            { new: true, upsert: true }
+        )
+        res.json({ data: 'ok', username: result.username })
+    } catch (err) {
+        console.error('resetadmin error:', err)
+        res.status(500).json({ data: 'error' })
+    }
+})
+
 router.post('/adminlogin', async (req, res) => {
     console.log(req.body);
     const username = req.body.uname

@@ -97,7 +97,7 @@ router.post('/addcart', async (req, res) => {
         const id = req.body.id
         const uid = req.body.uid
         console.log(req.body);
-        let quantity = req.body.qty
+        let quantity = Number(req.body.qty)
 
         const product = await Pro.findOne({ _id: id })
         
@@ -105,29 +105,30 @@ router.post('/addcart', async (req, res) => {
             return res.json({ "data": "Product not found" })
         }
 
+        const availableStock = Number(product.stock || 0)
         let total = product.price * quantity
 
         // Check if product is out of stock
-        if (product.stock <= 0) {
+        if (availableStock <= 0) {
             return res.json({ "data": "no stock", message: "Product is out of stock" })
         }
 
         // Check if requested quantity is available
-        if (product.stock < quantity) {
+        if (availableStock < quantity) {
             return res.json({ 
                 "data": "no stock", 
-                message: `Only ${product.stock} items available in stock` 
+                message: `Only ${availableStock} items available in stock` 
             })
         }
 
         const cart = await Cart.findOne({ product: id, user: uid })
         if (cart) {
             // Check if adding more would exceed stock
-            const newTotalQuantity = cart.quantity + quantity
-            if (newTotalQuantity > product.stock) {
+            const newTotalQuantity = Number(cart.quantity) + quantity
+            if (newTotalQuantity > availableStock) {
                 return res.json({ 
                     "data": "no stock", 
-                    message: `Cannot add more items. Only ${product.stock} items available in stock` 
+                    message: `Cannot add more items. Only ${availableStock} items available in stock` 
                 })
             }
             
@@ -186,52 +187,53 @@ router.get('/cartdelete/:id', async (req, res) => {
     res.json({ "data": "ok" })
 })
 router.post('/postorder', async (req, res) => {
-    const uid = req.body.uid
-    const cart = await Cart.find({ user: uid })
-    // console.log(cart)
-    const date = Date.now()
-    const amount = req.body.subtotal
+    try {
+        const uid = req.body.uid
+        const cart = await Cart.find({ user: uid })
+        const date = Date.now()
+        const amount = Number(req.body.subtotal || 0)
 
-    const sampledate = new Date(date);
+        const sampledate = new Date(date);
+        const formattedDate = sampledate.toLocaleString();
 
-    const formattedDate = sampledate.toLocaleString();
-    console.log(formattedDate);
-
-
-
-    var items = {
-        user: uid,
-        deliverystatus: "pending",
-        date: formattedDate,
-        amount: amount
-    }
-    const neworder = new Ordermain(items)
-    await neworder.save()
-
-    for (i of cart) {
-        console.log(i.product);
-        var items2 = {
-            ordermain: neworder.id,
-            product: i.product,
-            quantity: i.quantity,
+        const orderItems = {
+            user: uid,
+            deliverystatus: "pending",
+            date: formattedDate,
+            amount: amount
         }
-        const newsuborder = new Ordersub(items2)
-        await newsuborder.save()
-        const pro = await Pro.findOne({ _id: i.product._id })
-        const newstock = pro.stock - i.quantity
-        var items = {
-            stock: newstock
+        const neworder = new Ordermain(orderItems)
+        await neworder.save()
+
+        for (const cartItem of cart) {
+            const productId = cartItem.product
+            const quantity = Number(cartItem.quantity)
+
+            const items2 = {
+                ordermain: neworder._id,
+                product: productId,
+                quantity: quantity,
+            }
+            const newsuborder = new Ordersub(items2)
+            await newsuborder.save()
+
+            const pro = await Pro.findOne({ _id: productId })
+            const currentStock = Number(pro?.stock || 0)
+            const newstock = Math.max(0, currentStock - quantity)
+            await Pro.findOneAndUpdate(
+                { _id: productId },
+                { $set: { stock: newstock } },
+                { new: true }
+            )
         }
-        await Pro.findOneAndUpdate(
-            { _id: i.product._id },
-            { $set: items },
-            { new: true }
-        )
-        await Cart.findOneAndDelete({ user: uid })
+
+        await Cart.deleteMany({ user: uid })
+
+        res.json({ "data": "ok", orderId: neworder._id })
+    } catch (error) {
+        console.error('Error in postorder:', error)
+        res.status(500).json({ "data": "error" })
     }
-
-
-    res.json({ "data": "ok" })
 })
 router.get('/getorder/:uid/:index', async (req, res) => {
     const uid = req.params.uid

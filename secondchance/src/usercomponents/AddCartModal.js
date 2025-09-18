@@ -46,7 +46,7 @@ const AddCartModal = ({show,closepro,img,specpro,addcart,addqt,subqt,qtres,qty})
                             </div>
                             
                             <div className='d-flex mt-4'>
-                                {/* <button 
+                                <button 
                                     className='add-cart pb-2 pt-2' 
                                     onClick={() => addcart(specpro._id)}
                                     disabled={isOutOfStock}
@@ -56,7 +56,7 @@ const AddCartModal = ({show,closepro,img,specpro,addcart,addqt,subqt,qtres,qty})
                                     }}
                                 >
                                     {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-                                </button> */}
+                                </button>
                                 {!isOutOfStock && (
                                     <div className='qt-box ms-3 d-flex'>
                                         <div 

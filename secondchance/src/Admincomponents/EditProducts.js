@@ -34,9 +34,22 @@ const EditProducts = () => {
 
     const sub = async (e) => {
         e.preventDefault()
-        const response = await axios.post('http://localhost:8080/admin/postedit', { pname, price, desc, fl, editid }, { headers: { 'Content-Type': 'multipart/form-data' } })
-        console.log(response.data.data);
-        nav('/admin-products')
+        try{
+            const formData = new FormData()
+            formData.append('pname', pname)
+            formData.append('price', price)
+            formData.append('desc', desc)
+            formData.append('editid', editid)
+            if (fl) {
+                formData.append('fl', fl)
+            }
+            const response = await axios.post('http://localhost:8080/admin/postedit', formData)
+            console.log(response.data.data);
+            nav('/admin-products')
+        }catch(err){
+            console.error(err)
+            alert('Failed to update product. Please try again.')
+        }
     }
 
     return (

@@ -16,10 +16,27 @@ const ProductArea = ({sidevisible}) => {
 
     const sub = async (e) => {
         e.preventDefault()
-        const response = await axios.post('http://localhost:8080/admin/productpost', { pname, price, desc, category, fl }, { headers: { 'Content-Type': 'multipart/form-data' } })
-        console.log(fl);
-        console.log(response.data.data);
-        nav('/admin-products')
+        if (Number(price) <= 0) {
+            alert('Price must be greater than 0')
+            return
+        }
+        try{
+            const formData = new FormData()
+            formData.append('pname', pname)
+            formData.append('price', price)
+            formData.append('desc', desc)
+            formData.append('category', category)
+            if (fl) {
+                formData.append('fl', fl)
+            }
+            const response = await axios.post('http://localhost:8080/admin/productpost', formData)
+            console.log(fl);
+            console.log(response.data.data);
+            nav('/admin-products')
+        }catch(err){
+            console.error(err)
+            alert('Failed to create product. Please try again.')
+        }
     }
 
     const handleChange = (e) => {
@@ -44,7 +61,7 @@ const ProductArea = ({sidevisible}) => {
                                         <label>Product Name</label><br></br>
                                         <input type="text" required placeholder='product name' className='mt-1 mb-2 pro-inputs' onChange={(e) => pres(e.target.value)}></input><br></br>
                                         <label>Enter Price</label><br></br>
-                                        <input type="number" required placeholder='price' className='mt-1 mb-2 pro-inputs' onChange={(e) => pricefn(e.target.value)}></input><br></br>
+                                        <input type="number" required min="1" placeholder='price' className='mt-1 mb-2 pro-inputs' onChange={(e) => pricefn(e.target.value)}></input><br></br>
                                         <label>Category</label><br></br>
                                         <select className='mb-2 pro-inputs' value={category} onChange={handleChange}>
                                             <option value="all" >All</option>

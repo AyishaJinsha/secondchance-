@@ -67,6 +67,7 @@ router.post('/changestatus', async (req, res) => {
         ({ _id: id },
             { $set: items },
             { new: true })
+    res.json({ "data": "ok" })
 })
 
 

@@ -14,6 +14,10 @@ const MarketingManageArea = () => {
 
     const sub=async(e)=>{
         e.preventDefault()
+        if(!/^\d{10}$/.test(String(mob||''))){
+            alert('Mobile number must be exactly 10 digits')
+            return
+        }
         const response=await axios.post('http://localhost:8080/admin/createstore',{uname,pass,mob})
         console.log(response.data.data);
         if(response.data.data=="exist"){
@@ -43,7 +47,7 @@ const MarketingManageArea = () => {
                                 <label>Password</label><br></br>
                                 <input type="password" required placeholder='password' className='mt-1 mb-2 pro-inputs' onChange={(e)=>passres(e.target.value)}></input><br></br>
                                 <label>mobile number</label><br></br>
-                                <input type="number" required placeholder='mobile' className='mt-1 mb-2 pro-inputs' onChange={(e)=>mobres(e.target.value)}></input><br></br>
+                                <input type="number" required min="1000000000" max="9999999999" placeholder='mobile' className='mt-1 mb-2 pro-inputs' onChange={(e)=>mobres(e.target.value)}></input><br></br>
                                 <button type="submit" className='mt-2 btn btn-success'>create</button>
                             </form>
                         </div>
